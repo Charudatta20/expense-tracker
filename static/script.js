@@ -32,8 +32,6 @@ function signup() {
 
 /* ================= LOGIN ================= */
 function login() {
-    console.log("Login button clicked");
-
     const username = document.getElementById("login_username").value;
     const password = document.getElementById("login_password").value;
 
@@ -49,8 +47,6 @@ function login() {
     })
     .then(res => res.json())
     .then(data => {
-        console.log("Login response:", data);
-
         if (data.success) {
             alert("Login successful");
             window.location.href = "/dashboard";
@@ -66,8 +62,6 @@ function login() {
 
 /* ================= ADD / EDIT EXPENSE ================= */
 function saveExpense() {
-    console.log("Save Expense clicked");
-
     const id = document.getElementById("expense_id").value;
     const category = document.getElementById("category").value;
     const amount = document.getElementById("amount").value;
@@ -121,12 +115,14 @@ function loadExpenses() {
         .then(res => res.json())
         .then(data => {
             const table = document.getElementById("table");
-            if (!table) return; // page safety
+            if (!table) return;
 
             table.innerHTML = `
                 <tr>
                     <th>Category</th>
                     <th>Amount</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
                     <th>Comments</th>
                     <th>Actions</th>
                 </tr>
@@ -139,6 +135,8 @@ function loadExpenses() {
                     <tr>
                         <td>${e.category}</td>
                         <td>${e.amount}</td>
+                        <td>${e.created_at}</td>
+                        <td>${e.updated_at}</td>
                         <td>${e.comments || ""}</td>
                         <td>
                             <button type="button" onclick='editExpense(${JSON.stringify(e)})'>Edit</button>
@@ -207,7 +205,5 @@ function drawChart(data) {
     });
 }
 
-/* ================= AUTO LOAD ON DASHBOARD ================= */
-document.addEventListener("DOMContentLoaded", () => {
-    loadExpenses();
-});
+/* ================= AUTO LOAD ================= */
+document.addEventListener("DOMContentLoaded", loadExpenses);

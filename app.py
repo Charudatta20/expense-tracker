@@ -26,7 +26,8 @@ def init_db():
             category TEXT,
             amount REAL,
             comments TEXT,
-            created_at TEXT
+            created_at TEXT,
+            updated_at TEXT
         )
     """)
     db.commit()
@@ -59,7 +60,7 @@ def signup():
         )
         db.commit()
     except sqlite3.IntegrityError:
-        return jsonify({"success": False, "message": "User already exists"}), 400
+        return jsonify({"success": False}), 400
     finally:
         db.close()
     return jsonify({"success": True})
@@ -88,24 +89,27 @@ def login():
 @app.route("/api/expenses", methods=["GET"])
 def get_expenses():
     db = get_db()
-    rows = db.execute(
-        "SELECT * FROM expenses ORDER BY created_at DESC"
-    ).fetchall()
+    rows = db.execute("""
+        SELECT * FROM expenses
+        ORDER BY created_at DESC
+    """).fetchall()
     db.close()
     return jsonify([dict(row) for row in rows])
 
 @app.route("/api/expenses", methods=["POST"])
 def add_expense():
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data = request.json
     db = get_db()
     db.execute("""
-        INSERT INTO expenses (category, amount, comments, created_at)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO expenses (category, amount, comments, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?)
     """, (
         data["category"],
         data["amount"],
         data.get("comments", ""),
-        datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now,
+        now
     ))
     db.commit()
     db.close()
@@ -113,16 +117,18 @@ def add_expense():
 
 @app.route("/api/expenses/<int:expense_id>", methods=["PUT"])
 def update_expense(expense_id):
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     data = request.json
     db = get_db()
     db.execute("""
         UPDATE expenses
-        SET category=?, amount=?, comments=?
+        SET category=?, amount=?, comments=?, updated_at=?
         WHERE id=?
     """, (
         data["category"],
         data["amount"],
         data.get("comments", ""),
+        now,
         expense_id
     ))
     db.commit()
