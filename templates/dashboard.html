@@ -4,16 +4,20 @@
     <title>Expense Dashboard</title>
 </head>
 <body>
-    <h2>Add Expense</h2>
+    <h2>Add / Edit Expense</h2>
+
+    <!-- Hidden field for edit -->
+    <input type="hidden" id="expense_id">
 
     <input id="category" placeholder="Category">
     <br><br>
     <input id="amount" type="number" placeholder="Amount">
     <br><br>
-    <input id="comments" placeholder="Comments (optional)">
+    <input id="comments" placeholder="Comments">
     <br><br>
 
-    <button onclick="addExpense()">Add Expense</button>
+    <!-- IMPORTANT: type="button" -->
+    <button type="button" onclick="saveExpense()">Save Expense</button>
 
     <h2>Expenses</h2>
     <table border="1" id="table">
@@ -21,12 +25,11 @@
             <th>Category</th>
             <th>Amount</th>
             <th>Comments</th>
+            <th>Actions</th>
         </tr>
     </table>
 
     <h2>Category-wise Expense Distribution</h2>
-
-    <!-- ✅ Smaller container for pie chart -->
     <div style="width:300px; height:300px;">
         <canvas id="chart"></canvas>
     </div>

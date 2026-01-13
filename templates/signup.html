@@ -6,13 +6,20 @@
 <body>
     <h2>Signup</h2>
 
+    <!-- IMPORTANT: type="button" prevents page reload -->
     <input id="username" placeholder="Username">
     <br><br>
     <input id="password" type="password" placeholder="Password">
     <br><br>
 
-    <button onclick="signup()">Signup</button>
+    <button type="button" onclick="signup()">Signup</button>
 
+    <p>
+        Already have an account?
+        <a href="/">Go to Login</a>
+    </p>
+
+    <!-- JS MUST be loaded -->
     <script src="/static/script.js"></script>
 </body>
 </html>

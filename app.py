@@ -62,14 +62,12 @@ def signup():
         return jsonify({"success": False, "message": "User already exists"}), 400
     finally:
         db.close()
-
     return jsonify({"success": True})
 
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.json
     db = get_db()
-
     user = db.execute(
         "SELECT * FROM users WHERE username=? AND password=?",
         (data["username"], data["password"])
@@ -77,7 +75,7 @@ def login():
     db.close()
 
     if not user:
-        return jsonify({"success": False, "message": "Invalid credentials"}), 401
+        return jsonify({"success": False}), 401
 
     token = jwt.encode({
         "username": user["username"],
@@ -112,6 +110,32 @@ def add_expense():
     db.commit()
     db.close()
     return jsonify({"message": "Expense added"})
+
+@app.route("/api/expenses/<int:expense_id>", methods=["PUT"])
+def update_expense(expense_id):
+    data = request.json
+    db = get_db()
+    db.execute("""
+        UPDATE expenses
+        SET category=?, amount=?, comments=?
+        WHERE id=?
+    """, (
+        data["category"],
+        data["amount"],
+        data.get("comments", ""),
+        expense_id
+    ))
+    db.commit()
+    db.close()
+    return jsonify({"message": "Expense updated"})
+
+@app.route("/api/expenses/<int:expense_id>", methods=["DELETE"])
+def delete_expense(expense_id):
+    db = get_db()
+    db.execute("DELETE FROM expenses WHERE id=?", (expense_id,))
+    db.commit()
+    db.close()
+    return jsonify({"message": "Expense deleted"})
 
 # ---------------- RUN ----------------
 if __name__ == "__main__":
